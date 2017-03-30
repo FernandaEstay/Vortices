@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Memoria.ButtonPanel" Collapsed="true">
+    <Position X="4.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QYBQAgYQiQhBAwBGASIAAAIkQAAQAgCQAAABAACCEAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\ButtonPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.DIOController" Collapsed="true">
+    <Position X="4.25" Y="12" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAEAAAQIAAAAAAAAIAQAAAAAAACAAAAABAAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\DIOController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.DIOManager" Collapsed="true">
+    <Position X="4.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QgwAGWCKHiqUAAGgAAkgQAOEZYAIQoMNagApAgIBBmA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\DIOManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.HandMapping" Collapsed="true">
+    <Position X="7" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\HandMapping.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.HapticDetector" Collapsed="true">
+    <Position X="7" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQASAAEAAAAAAAAAAIAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\HapticDetector.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.LoadImages" Collapsed="true">
+    <Position X="10.25" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CAAEAAIAAAAgAQgAQEAAgAAAAAAEAIAIAAAAABAANAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LoadImages.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.LoadImagesController" Collapsed="true">
+    <Position X="7" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAQACEAEAgAAAEAAAAAAAAgAABIAAQAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LoadImagesController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.LoadImageBehaviour" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAEBABAAAAAAQAAAAAAgBAAAACAAAIAAAAAABAAIAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LoadImagesController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.LoadingScene" Collapsed="true">
+    <Position X="7" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAACAAABAAEQACAAAAAAAAAACAAAAQAAAAAAAACAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LoadingScene.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.LookPointer" Collapsed="true">
+    <Position X="4.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BgAAIhAEAgAAESAgGQAAAIoAABQAAIoABAAAAEAiAFI=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LookPointer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.LookPointerRaycasting" Collapsed="true">
+    <Position X="7" Y="12.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AARBAQAAIAAAAQACAAEAAAAAAgAAAgAAAAAAIAAAAAg=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\LookPointerRaycasting.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.PitchGrabObject" Collapsed="true">
+    <Position X="7" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAgAAQEIAAIRYAxAJAAAgAQAaAJMACIAABAAAQAAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\PitchGrabObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.SphereController" Collapsed="true">
+    <Position X="7" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAEAEAAVAAAAAAAgBEQAAAAAgAEWAIIEAMEAAAAICI=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\SphereController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.UnityOpenGlove" Collapsed="true">
+    <Position X="4.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQAAAACAFEAqgQBSBAZDBQCUBAgRpAFoEwABCCEYAwA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\UnityOpenGlove.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.Core.DebugHelperScript" Collapsed="true">
+    <Position X="4.25" Y="9" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\Core\DebugHelperScript.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Memoria.Core.LeapHeadMountedRig" Collapsed="true">
+    <Position X="4.25" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgA=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\Core\LeapHeadMountedRig.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memoria.Core.TriggerEnterExitAction" Collapsed="true">
+    <Position X="4.25" Y="7.5" Width="2" />
+    <InheritanceLine Type="Gamelogic.GLMonoBehaviour" ManuallyRouted="true">
+      <Path>
+        <Point X="1.25" Y="6.191" />
+        <Point X="1.25" Y="7.875" />
+        <Point X="4.25" Y="7.875" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAIAAQAAAAAAAAAE=</HashCode>
+      <FileName>Assets\_Memoria\Scripts\Core\TriggerEnterExitAction.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Gamelogic.GLMonoBehaviour" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Assets\Gamelogic\Plugins\Common\Extensions\GLMonoBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
