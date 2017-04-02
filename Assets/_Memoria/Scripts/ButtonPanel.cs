@@ -99,7 +99,7 @@ namespace Memoria
 
 		public void EnableMoveCameraInside()
 		{
-			if (!_dioManager.InLastSphere)
+			if (!_dioManager.InLastVisualization)
 				EnableButton(moveCameraInside3DButton, moveCameraInsideEventTrigger);
 			else
 				DisableButton(moveCameraInside3DButton, moveCameraInsideEventTrigger);
@@ -107,7 +107,7 @@ namespace Memoria
 
 		public void EnableMoveCameraOutside()
 		{
-			if (!_dioManager.InFirstSphere)
+			if (!_dioManager.InFirstVisualization)
 				EnableButton(moveCameraOutside3DButton, moveCameraOutsideEventTrigger);
 			else
 				DisableButton(moveCameraOutside3DButton, moveCameraOutsideEventTrigger);

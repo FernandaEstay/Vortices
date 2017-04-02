@@ -38,7 +38,7 @@ namespace Memoria
 				if (posiblePitcheGrabObject == null)
 					return;
 
-				if (posiblePitcheGrabObject.dioController.sphereController.sphereId != _dioManager.actualSphere)
+				if (posiblePitcheGrabObject.dioController.visualizationController.id != _dioManager.actualVisualization)
 				{
                     if (_actualPitchGrabObject != null)
                         _actualPitchGrabObject.OnUnDetect();
@@ -81,8 +81,8 @@ namespace Memoria
 				return;
 
 			print("Tag: " + _raycastHit.collider.tag);
-			print(string.Format("ID Name: {0}, Sphere ID: {1}",posiblePitcheGrabObject.idName, posiblePitcheGrabObject.dioController.sphereController.sphereId));
-			print("Actual Sphere: " + posiblePitcheGrabObject.dioController.DioManager.actualSphere);
+			print(string.Format("ID Name: {0}, Sphere ID: {1}",posiblePitcheGrabObject.idName, posiblePitcheGrabObject.dioController.visualizationController.id));
+			print("Actual Sphere: " + posiblePitcheGrabObject.dioController.DioManager.actualVisualization);
 		}
 	}
 }

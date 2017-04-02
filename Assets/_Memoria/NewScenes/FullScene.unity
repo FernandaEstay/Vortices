@@ -1458,6 +1458,62 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 148834907}
+--- !u!1 &156542728
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 156542729}
+  - component: {fileID: 156542730}
+  m_Layer: 0
+  m_Name: PlaneController(Clone)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &156542729
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 156542728}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 570314049}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &156542730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 156542728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9842ffd7ba1e08948b4a416ebc090849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementsToDisplay: 1
+  visualizationRow: 1
+  rowHightDistance: 0.4
+  debugGizmo: 1
+  debugColor: {r: 1, g: 0, b: 0, a: 1}
+  notInZero: 0
+  id: 0
+  alpha: 1
+  dioControllerList: []
+  dioManager: {fileID: 0}
+  elementsPerRow: 
+  rowDistanceDifference: 0.15
+  scaleFactor: {x: 1, y: 1, z: 1}
+  distance: 1
+  autoAngleDistance: 1
+  angleDistance: 10
 --- !u!1 &168479567
 GameObject:
   m_ObjectHideFlags: 0
@@ -2182,6 +2238,7 @@ GameObject:
   - component: {fileID: 570314049}
   - component: {fileID: 570314050}
   - component: {fileID: 570314051}
+  - component: {fileID: 570314052}
   m_Layer: 0
   m_Name: DIOManager
   m_TagString: Untagged
@@ -2200,6 +2257,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 971670320}
+  - {fileID: 156542729}
   m_Father: {fileID: 372616893}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2221,6 +2279,7 @@ MonoBehaviour:
   useHapticGlove: 0
   useKeyboard: 1
   useMouse: 0
+  visualizationPlane: 1
   useJoystick: 0
   csvCreatorPath: MemoriaOutput.csv
   rayCastingDetector: {fileID: 1832371111}
@@ -2245,15 +2304,21 @@ MonoBehaviour:
   action5Key: 13
   autoTuneSpheresOnPlay: 1
   informationPrefab: {fileID: 11437288, guid: 0caad4431c801b047862966bf4f719a4, type: 2}
-  sphereCounter: {fileID: 1084468299}
+  visualizationCounter: {fileID: 1084468299}
   spherePrefab: {fileID: 11406576, guid: c5d4ca7511fd15c498687c26efdf7b4e, type: 2}
   sphereControllers:
   - {fileID: 971670321}
   loadImageController: {fileID: 1042025247}
+  planePrefab: {fileID: 114315593164334704, guid: 553f3cb86b461364facfa02071d1c7e1,
+    type: 2}
+  informationPlanePrefab: {fileID: 11437288, guid: 0caad4431c801b047862966bf4f719a4,
+    type: 2}
+  planeControllers: []
   pitchedDioController: {fileID: 0}
-  actualSphere: 0
+  actualVisualization: 0
   lookPointerInstance: {fileID: 0}
   movingSphere: 0
+  movingPlane: 0
 --- !u!114 &570314051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2270,6 +2335,33 @@ MonoBehaviour:
   leftBaudRate: 57600
   rightComDevice: COM8
   rightBaudRate: 57600
+--- !u!114 &570314052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 570314048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9842ffd7ba1e08948b4a416ebc090849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementsToDisplay: 1
+  visualizationRow: 1
+  rowHightDistance: 0.4
+  debugGizmo: 1
+  debugColor: {r: 1, g: 0, b: 0, a: 1}
+  notInZero: 0
+  id: 0
+  alpha: 1
+  dioControllerList: []
+  dioManager: {fileID: 0}
+  elementsPerRow: 
+  rowDistanceDifference: 0.15
+  scaleFactor: {x: 1, y: 1, z: 1}
+  distance: 1
+  autoAngleDistance: 1
+  angleDistance: 10
 --- !u!1 &656621334
 GameObject:
   m_ObjectHideFlags: 0
@@ -3238,20 +3330,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementsToDisplay: 39
-  sphereRows: 3
+  visualizationRow: 1
   rowHightDistance: 0.2
+  debugGizmo: 1
+  debugColor: {r: 1, g: 0, b: 0, a: 1}
+  notInZero: 0
+  id: 0
+  alpha: 1
+  dioControllerList: []
+  dioManager: {fileID: 0}
+  elementsPerRow: 
   rowRadiusDifference: 0.05
   scaleFactor: {x: 0.2, y: 0.2, z: 0.001}
   sphereRadius: 0.45
-  sphereAlpha: 0.7
   autoAngleDistance: 1
   angleDistance: 10
-  showDebugGizmo: 0
-  sphereDebugColor: {r: 1, g: 0, b: 0, a: 1}
-  dioControllerList: []
-  dioManager: {fileID: 0}
-  notInZero: 0
-  sphereId: 0
 --- !u!1 &1003815471 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 122640, guid: 23f2cce114628a448bfeaae171b4c0c0, type: 2}
@@ -3297,11 +3390,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pathPrefix: file://
-  pathImageAssets: C:\USACH\
+  pathImageAssets: D:\USACH\
   pathSmall: Data\
   filename: g_imagen_
-  groupImageCsvPath: C:\Users\feres\Documents\VORTICES-develop\GrupoImagenes.csv
-  test: 0
+  groupImageCsvPath: D:\Proyectos\Proyectos Unity3D\AmbienteVR-USACH\GrupoImagenes.csv
+  test: 3
   _fileType: 0
 --- !u!4 &1042025246
 Transform:
@@ -6605,21 +6698,21 @@ Prefab:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0.69659084
-      objectReference: {fileID: 0}
     - target: {fileID: 400028, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
       propertyPath: m_LocalRotation.y
       value: -0.27697015
+      objectReference: {fileID: 0}
+    - target: {fileID: 400004, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: -0.9943704
       objectReference: {fileID: 0}
     - target: {fileID: 400048, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
       propertyPath: m_LocalRotation.y
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 400004, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: -0.9943704
+    - target: {fileID: 400000, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.69659084
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: eba068b4380af451aad6e8eb29d6a476, type: 2}
@@ -7149,6 +7242,10 @@ Prefab:
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: 400028, guid: b89ffbedc5a69461883ac5448c96674d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: -0.6965909
+      objectReference: {fileID: 0}
     - target: {fileID: 400024, guid: b89ffbedc5a69461883ac5448c96674d, type: 2}
       propertyPath: m_LocalRotation.y
       value: -0.27697027
@@ -7156,10 +7253,6 @@ Prefab:
     - target: {fileID: 400046, guid: b89ffbedc5a69461883ac5448c96674d, type: 2}
       propertyPath: m_LocalRotation.x
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400028, guid: b89ffbedc5a69461883ac5448c96674d, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: -0.6965909
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b89ffbedc5a69461883ac5448c96674d, type: 2}
