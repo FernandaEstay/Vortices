@@ -37,7 +37,6 @@ namespace Memoria
 
         public override void CreateVisualization(bool createNewObjects, Vector3 planeCenter)
         {
-            Debug.Log("llega a create visualization de plane");
             var center = planeCenter;
             var planeDistance = distance;
 
@@ -66,7 +65,6 @@ namespace Memoria
                 {
                     if (createNewObjects)
                     {
-                        Debug.Log("instantiate " + dioManager.informationPlanePrefab.name + "name" + gameObject.name);
                         var grabableObject = Instantiate(dioManager.informationPlanePrefab, gameObject);     /* se instancia un DIOController en grabableObject */
                         grabableObject.transform.RotateAroundY(180);
 

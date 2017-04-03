@@ -65,13 +65,15 @@ namespace Memoria
 		public KeyCode action4Key;
 		public KeyCode action5Key;
 
-		//Sphere Configuration
-		public bool autoTuneSpheresOnPlay;
-		public DIOController informationPrefab;
-		public Text visualizationCounter;
+        //Visualization configuration
+		public bool autoTuneVisualizationOnPlay;
+        public LoadImagesController loadImageController;
+        public Text visualizationCounter;
+
+        //Sphere Configuration
+        public DIOController informationPrefab;
 		public SphereController spherePrefab;
 		public List<SphereController> sphereControllers;
-        public LoadImagesController loadImageController;
 
         //Plane Configuration
         public PlaneController planePrefab;
@@ -141,7 +143,7 @@ namespace Memoria
 
 		public void Start()
 		{
-			SetVariables();
+			SetVariables(); 
 			var visualizationTextureIndex = 0;
 			var visualizationIndex = 0;
 			actualVisualization = 0;
@@ -157,7 +159,7 @@ namespace Memoria
 				leapSpacechildren.gameObject.SetActive(useLeapMotion);
 			}
 
-			if (autoTuneSpheresOnPlay)
+			if (autoTuneVisualizationOnPlay)
 			{
                 if (visualizationPlane)
                     AutoTunePlanes();

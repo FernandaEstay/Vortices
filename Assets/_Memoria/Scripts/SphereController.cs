@@ -47,7 +47,6 @@ namespace Memoria
 
         public override void CreateVisualization(bool createNewObjects, Vector3 sphereCenter)
         {
-            Debug.Log("llega a create visualization sphere");
             var center = sphereCenter;
             var radius = sphereRadius;
 

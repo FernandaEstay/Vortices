@@ -46,16 +46,17 @@ namespace Memoria.Editor
         private GLSerializedProperty _action4Key;
         private GLSerializedProperty _action5Key;
 
-        private GLSerializedProperty _autoTuneSpheresOnPlay;
+        private GLSerializedProperty _autoTuneVisualizationOnPlay;
+        private GLSerializedProperty _visualizationCounter;
+        private GLSerializedProperty _loadImageController;
+
         private GLSerializedProperty _informationPrefab;
-        private GLSerializedProperty _sphereCounter;
         private GLSerializedProperty _spherePrefab;
         private GLSerializedProperty _sphereControllers;
 
         private GLSerializedProperty _planePrefab;
         private GLSerializedProperty _informationPlanePrefab;
         private GLSerializedProperty _planeControllers;
-        private GLSerializedProperty _loadImageController;
 
         public void OnEnable()
         {
@@ -95,9 +96,9 @@ namespace Memoria.Editor
             _action4Key = FindProperty("action4Key");
             _action5Key = FindProperty("action5Key");
 
-            _autoTuneSpheresOnPlay = FindProperty("autoTuneSpheresOnPlay");
+            _autoTuneVisualizationOnPlay = FindProperty("autoTuneVisualizationOnPlay");
             _informationPrefab = FindProperty("informationPrefab");
-            _sphereCounter = FindProperty("visualizationCounter");
+            _visualizationCounter = FindProperty("visualizationCounter");
             _spherePrefab = FindProperty("spherePrefab");
             _planePrefab = FindProperty("planePrefab");
             _informationPlanePrefab = FindProperty("informationPlanePrefab");
@@ -129,12 +130,14 @@ namespace Memoria.Editor
 
             AddField(_useKeyboard);
 
+            /*
             if (_useKeyboard.boolValue)
             {
                 EditorGUI.indentLevel += 1;
                 AddField(_useMouse);
                 EditorGUI.indentLevel -= 1;
             }
+            */
 
             AddField(_useJoystick);
 
@@ -142,6 +145,9 @@ namespace Memoria.Editor
 
             EditorHelper.AddLabel("Visualization Configuration", true);
             AddField(_visualizationPlane);
+            AddField(_autoTuneVisualizationOnPlay);
+            AddField(_visualizationCounter);
+            AddField(_loadImageController);
 
             Splitter();
 
@@ -197,13 +203,10 @@ namespace Memoria.Editor
             Splitter();
 
             EditorHelper.AddLabel("Sphere Configuration", true);
-            AddField(_autoTuneSpheresOnPlay);
             AddField(_informationPrefab);
-            AddField(_sphereCounter);
 
             Target.spherePrefab = EditorGUILayout.ObjectField(new GUIContent("SphereController Prefab"), _spherePrefab.SerializedProperty.objectReferenceValue, typeof(SphereController), false) as SphereController;
 
-            AddField(_loadImageController);
             RemoveAndAddSphereButtons();
             AutoTuneSphereButtons();
 

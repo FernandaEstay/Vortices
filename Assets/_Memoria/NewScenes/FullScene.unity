@@ -2302,13 +2302,13 @@ MonoBehaviour:
   action3Key: 113
   action4Key: 119
   action5Key: 13
-  autoTuneSpheresOnPlay: 1
-  informationPrefab: {fileID: 11437288, guid: 0caad4431c801b047862966bf4f719a4, type: 2}
+  autoTuneVisualizationOnPlay: 1
+  loadImageController: {fileID: 1042025247}
   visualizationCounter: {fileID: 1084468299}
+  informationPrefab: {fileID: 11437288, guid: 0caad4431c801b047862966bf4f719a4, type: 2}
   spherePrefab: {fileID: 11406576, guid: c5d4ca7511fd15c498687c26efdf7b4e, type: 2}
   sphereControllers:
   - {fileID: 971670321}
-  loadImageController: {fileID: 1042025247}
   planePrefab: {fileID: 114315593164334704, guid: 553f3cb86b461364facfa02071d1c7e1,
     type: 2}
   informationPlanePrefab: {fileID: 11437288, guid: 0caad4431c801b047862966bf4f719a4,
