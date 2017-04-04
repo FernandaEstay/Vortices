@@ -24,12 +24,16 @@ namespace Memoria
 		//General Configuration
 		public LoadingScene loadingScene;
 		public ButtonPanel buttonPanel;
+        public PanelMouse panelMouse;
 		public bool useLeapMotion = true;
 		public bool usePitchGrab = true;
 		public bool useHapticGlove;
 		public bool useKeyboard;
 		public bool useMouse;
+        public bool visualizationPlane = true;
 		public bool useJoystick;
+        public bool mouseInput;
+        public bool kinectInput;
 
 		//DataOutput Configuration
 		[HideInInspector]
@@ -64,20 +68,28 @@ namespace Memoria
 		public KeyCode action4Key;
 		public KeyCode action5Key;
 
-		//Sphere Configuration
-		public bool autoTuneSpheresOnPlay;
-		public DIOController informationPrefab;
-		public Text sphereCounter;
+        //Visualization configuration
+		public bool autoTuneVisualizationOnPlay;
+        public LoadImagesController loadImageController;
+        public Text visualizationCounter;
+
+        //Sphere Configuration
+        public DIOController informationPrefab;
 		public SphereController spherePrefab;
 		public List<SphereController> sphereControllers;
-		public LoadImagesController loadImageController;
+
+        //Plane Configuration
+        public PlaneController planePrefab;
+        public DIOController informationPlanePrefab;
+        public List<PlaneController> planeControllers;
+
 
 		[HideInInspector]
 		public DIOController pitchedDioController;
 		[HideInInspector]
-		public int actualSphere;
+		public int actualVisualization;
 		[HideInInspector]
-		public List<Tuple<float, float>> radiusAlphaSphereList;
+		public List<Tuple<float, float>> radiusAlphaVisualizationList;
 		[HideInInspector]
 		public LookPointer lookPointerInstance;
 		[HideInInspector]
@@ -87,7 +99,14 @@ namespace Memoria
 		[HideInInspector]
 		public Action finalSphereAction;
 
-		private const string Scope = "Config";
+        [HideInInspector]
+        public bool movingPlane;
+        [HideInInspector]
+        public Action initialPlaneAction;
+        [HideInInspector]
+        public Action finalPlaneAction;
+
+        private const string Scope = "Config";
 
 		#endregion
 
@@ -97,8 +116,8 @@ namespace Memoria
 		{
 			get
 			{
-				var fullDioList = sphereControllers.SelectMany(s => s.dioControllerList);
-				return fullDioList.Any(dio => dio.pitchGrabObject.isPinched);
+                var fullDioList = visualizationPlane ? sphereControllers.SelectMany(s => s.dioControllerList) : planeControllers.SelectMany(s => s.dioControllerList);
+                return fullDioList.Any(dio => dio.pitchGrabObject.isPinched);
 			}
 		}
 
@@ -106,19 +125,19 @@ namespace Memoria
 		{
 			get
 			{
-				var fullDioList = sphereControllers.SelectMany(s => s.dioControllerList);
-				return fullDioList.All(dio => dio.inSpherePosition);
+                var fullDioList = visualizationPlane ? sphereControllers.SelectMany(s => s.dioControllerList) : planeControllers.SelectMany(s => s.dioControllerList);
+                return fullDioList.All(dio => dio.inSpherePosition);
 			}
 		}
 
-		public bool InLastSphere
+		public bool InLastVisualization
 		{
-			get { return actualSphere == sphereControllers.Count - 1; }
+			get { return actualVisualization == (sphereControllers.Count > planeControllers.Count ? sphereControllers.Count - 1 : planeControllers.Count - 1); }
 		}
 
-		public bool InFirstSphere
+		public bool InFirstVisualization
 		{
-			get { return actualSphere == 0; }
+			get { return actualVisualization == 0; }
 		}
 
 		#endregion
@@ -127,13 +146,14 @@ namespace Memoria
 
 		public void Start()
 		{
-			SetVariables();
+			SetVariables(); 
+			var visualizationTextureIndex = 0;
+			var visualizationIndex = 0;
+			actualVisualization = 0;
+			radiusAlphaVisualizationList = new List<Tuple<float, float>> { Tuple.New(0.0f, 0.0f) };
 
-			var sphereTextureIndex = 0;
-			var sphereIndex = 0;
-			actualSphere = 0;
-			radiusAlphaSphereList = new List<Tuple<float, float>> { Tuple.New(0.0f, 0.0f) };
 			movingSphere = false;
+            movingPlane = false;
 
 			csvCreator = new CsvCreator(csvCreatorPath);
 
@@ -144,24 +164,40 @@ namespace Memoria
 				leapSpacechildren.gameObject.SetActive(useLeapMotion);
 			}
 
-			if (autoTuneSpheresOnPlay)
+			if (autoTuneVisualizationOnPlay)
 			{
-				AutoTuneSpheres();
+                if (visualizationPlane)
+                    AutoTunePlanes();
+                else
+                    AutoTuneSpheres();
+                
 			}
+            if (visualizationPlane) 
+            {
+                foreach (var planeController in planeControllers)
+                {
+                    planeController.InitializeDioControllers(this, visualizationIndex, transform.position, visualizationTextureIndex, true);
+                    radiusAlphaVisualizationList.Add(Tuple.New(planeController.distance, planeController.alpha));
 
-			foreach (var sphereController in sphereControllers)
-			{
-                /*  this -> DiOManager            * sphereIndex -> id sphere          * tranform.position -> centro de la esfera                 */
-				sphereController.InitializeDioControllers(this, sphereIndex, transform.position, sphereTextureIndex, true);
-				radiusAlphaSphereList.Add(Tuple.New(sphereController.sphereRadius, sphereController.sphereAlpha));
+                    visualizationTextureIndex += planeController.elementsToDisplay;
+                    visualizationIndex += 1;
+                }
+            }
+            else
+            {
+                foreach (var sphereController in sphereControllers)
+                {
+                    sphereController.InitializeDioControllers(this, visualizationIndex, transform.position, visualizationTextureIndex, true);
+                    radiusAlphaVisualizationList.Add(Tuple.New(sphereController.sphereRadius, sphereController.alpha));
 
-				sphereTextureIndex += sphereController.elementsToDisplay;
-				sphereIndex += 1;
-			}
+                    visualizationTextureIndex += sphereController.elementsToDisplay;
+                    visualizationIndex += 1;
+                }
+            }
 
 			if (lookPointerPrefab != null && !(useKeyboard && useMouse))
 			{
-				var lookPointerPosition = new Vector3(0.0f, 0.0f, radiusAlphaSphereList[1].First);
+				var lookPointerPosition = new Vector3(0.0f, 0.0f, radiusAlphaVisualizationList[1].First);
 				lookPointerInstance = Instantiate(lookPointerPrefab, leapMotionRig.centerEyeAnchor, lookPointerPosition, Quaternion.identity);
 				lookPointerInstance.transform.localScale = lookPointerScale;
 
@@ -170,7 +206,16 @@ namespace Memoria
 
 			rayCastingDetector.Initialize(this);
 
-			buttonPanel.Initialize(this);
+            if (mouseInput && !useKeyboard && !useJoystick)
+            {
+                panelMouse.Initialize(this);
+                buttonPanel.gameObject.SetActive(false);
+            }
+            else
+            {
+                buttonPanel.Initialize(this);
+                panelMouse.gameObject.SetActive(false);
+            }
 
 			//loadImageController.Initialize(this);
 			loadingScene.Initialize(this);
@@ -190,8 +235,8 @@ namespace Memoria
 					buttonPanel.zoomOut3DButton.gameObject.SetActive(false);
 				}
 			}
-
-			buttonPanel.zoomIn3DButton.gameObject.SetActive(false);
+            if(!mouseInput)
+			    buttonPanel.zoomIn3DButton.gameObject.SetActive(false);
 
 			StartCoroutine(loadImageController.LoadFolderImages());
 
@@ -209,7 +254,39 @@ namespace Memoria
 				buttonPanel.EnableMoveCameraInside();
 				buttonPanel.EnableMoveCameraOutside();
 			};
-		}
+
+            if (mouseInput && !useKeyboard && !useJoystick)
+            {
+                initialPlaneAction = () =>
+                {
+                    panelMouse.DisableMoveCameraInside();
+                    panelMouse.DisableMoveCameraOutside();
+                };
+
+                finalPlaneAction = () =>
+                {
+                    panelMouse.EnableMoveCameraInside();
+                    panelMouse.EnableMoveCameraOutside();
+                };
+            }
+            else
+            {
+                initialPlaneAction = () =>
+                {
+                    buttonPanel.DisableZoomIn();
+                    buttonPanel.DisableZoomOut();
+                    buttonPanel.DisableAccept();
+                    buttonPanel.DisableMoveCameraInside();
+                    buttonPanel.DisableMoveCameraOutside();
+                };
+
+                finalPlaneAction = () =>
+                {
+                    buttonPanel.EnableMoveCameraInside();
+                    buttonPanel.EnableMoveCameraOutside();
+                };
+            }
+        }
 
 		private void SetVariables()
 		{
@@ -262,8 +339,11 @@ namespace Memoria
 
 		public void Update()
 		{
-			sphereCounter.text = string.Format("{0}/{1}", actualSphere + 1, sphereControllers.Count);
-		}
+            if(visualizationPlane)
+			    visualizationCounter.text = string.Format("{0}/{1}", actualVisualization + 1, planeControllers.Count);
+            else
+                visualizationCounter.text = string.Format("{0}/{1}", actualVisualization + 1, sphereControllers.Count);
+        }
 
 		public void OnValidate()
 		{
@@ -300,11 +380,17 @@ namespace Memoria
 
 			if (Input.GetKeyDown(action3Key))
 			{
-				MoveSphereInside(1, initialSphereAction, finalSphereAction);
+                if(visualizationPlane)
+                    MovePlaneInside(1, initialPlaneAction, finalPlaneAction);
+                else
+                    MoveSphereInside(1, initialSphereAction, finalSphereAction);
 			}
 			else if (Input.GetKeyDown(action4Key))
 			{
-				MoveSphereOutside(1, initialSphereAction, finalSphereAction);
+                if (visualizationPlane)
+                    MovePlaneOutside(1, initialPlaneAction, finalPlaneAction);
+                else
+				    MoveSphereOutside(1, initialSphereAction, finalSphereAction);
 			}
 		}
 
@@ -315,10 +401,20 @@ namespace Memoria
 
 			var wheelAxis = Input.GetAxis("Mouse ScrollWheel");
 
-			if (wheelAxis < 0.0f)
-				MoveSphereInside(1, initialSphereAction, finalSphereAction);
-			else if (wheelAxis > 0.0f)
-				MoveSphereOutside(1, initialSphereAction, finalSphereAction);
+            if (wheelAxis < 0.0f)
+            {
+                if (visualizationPlane)
+                    MovePlaneInside(1, initialPlaneAction, finalPlaneAction);
+                else
+                    MoveSphereInside(1, initialSphereAction, finalSphereAction);
+            }
+            else if (wheelAxis > 0.0f)
+            {
+                if (visualizationPlane)
+                    MovePlaneOutside(1, initialPlaneAction, finalPlaneAction);
+                else
+                    MoveSphereOutside(1, initialSphereAction, finalSphereAction);
+            }
 		}
 
 		private void JoystickInput()
@@ -329,8 +425,20 @@ namespace Memoria
 			var moveSphereInsideAxis = Input.GetAxis("Action3");
 			var moveSphereOutsideAxis = Input.GetAxis("Action4");
 
-			MoveSphereInside(moveSphereInsideAxis, initialSphereAction, finalSphereAction);
-			MoveSphereOutside(moveSphereOutsideAxis, initialSphereAction, finalSphereAction);
+            var movePlaneInsideAxis = Input.GetAxis("Action3");
+            var movePlaneOutsideAxis = Input.GetAxis("Action4");
+
+            if (visualizationPlane)
+            {
+                MovePlaneInside(movePlaneInsideAxis, initialPlaneAction, finalPlaneAction);
+                MovePlaneOutside(movePlaneOutsideAxis, initialPlaneAction, finalPlaneAction);
+            }
+            else
+            {
+                MoveSphereInside(moveSphereInsideAxis, initialSphereAction, finalSphereAction);
+                MoveSphereOutside(moveSphereOutsideAxis, initialSphereAction, finalSphereAction);
+            }
+            
 		}
 
 		#endregion
@@ -357,7 +465,7 @@ namespace Memoria
 
 		public void MoveSphereHorizontal(float horizontalAxis)
 		{
-			var sphereTransform = sphereControllers[actualSphere].transform;
+			var sphereTransform = sphereControllers[actualVisualization].transform;
 
 			sphereTransform.Rotate(Vector3.down * horizontalSpeed * horizontalAxis, Space.Self);
 		}
@@ -365,7 +473,7 @@ namespace Memoria
 		private int _sphereVerticalCounter = 50;
 		public void MoveSphereVertical(float verticalAxis)
 		{
-			if (verticalAxis == 1.0f && _sphereVerticalCounter >= 100)
+            if (verticalAxis == 1.0f && _sphereVerticalCounter >= 100)
 			{
 				_sphereVerticalCounter = 100;
 				return;
@@ -377,7 +485,7 @@ namespace Memoria
 				return;
 			}
 
-			var sphereTransform = sphereControllers[actualSphere].transform;
+			var sphereTransform = sphereControllers[actualVisualization].transform;
 
 			sphereTransform.Rotate(Vector3.right * verticalSpeed * verticalAxis, Space.World);
 
@@ -386,7 +494,7 @@ namespace Memoria
 
 		public void MoveSphereInside(float insideAxis, Action initialAction, Action finalAction)
 		{
-			if (insideAxis == 1.0f && !movingSphere && lookPointerInstance.actualPitchGrabObject == null &&
+            if (insideAxis == 1.0f && !movingSphere && lookPointerInstance.actualPitchGrabObject == null &&
 				!lookPointerInstance.zoomingIn && !lookPointerInstance.zoomingOut && AreAllDioOnSphere)
 			{
 				StartCoroutine(MoveSphereInside(initialAction, finalAction));
@@ -397,10 +505,22 @@ namespace Memoria
 					finalAction();
 			}
 		}
-
-		public void MoveSphereOutside(float outsideAxis, Action initialAction, Action finalAction)
+        public void MovePlaneInside(float insideAxis, Action initialAction, Action finalAction)
+        {
+            if (insideAxis == 1.0f && !movingPlane && lookPointerInstance.actualPitchGrabObject == null &&
+                !lookPointerInstance.zoomingIn && !lookPointerInstance.zoomingOut && AreAllDioOnSphere)
+            {
+                StartCoroutine(MovePlaneInside(initialAction, finalAction));
+            }
+            else
+            {
+                if (finalAction != null)
+                    finalAction();
+            }
+        }
+        public void MoveSphereOutside(float outsideAxis, Action initialAction, Action finalAction)
 		{
-			if (outsideAxis == 1.0f && !movingSphere && lookPointerInstance.actualPitchGrabObject == null &&
+            if (outsideAxis == 1.0f && !movingSphere && lookPointerInstance.actualPitchGrabObject == null &&
 				!lookPointerInstance.zoomingIn && !lookPointerInstance.zoomingOut && AreAllDioOnSphere)
 			{
 				StartCoroutine(MoveSphereOutside(initialAction, finalAction));
@@ -411,19 +531,34 @@ namespace Memoria
 					finalAction();
 			}
 		}
+        public void MovePlaneOutside(float outsideAxis, Action initialAction, Action finalAction)
+        {
+            if (outsideAxis == 1.0f && !movingPlane && lookPointerInstance.actualPitchGrabObject == null &&
+                !lookPointerInstance.zoomingIn && !lookPointerInstance.zoomingOut && AreAllDioOnSphere)
+            {
+                StartCoroutine(MovePlaneOutside(initialAction, finalAction));
+            }
+            else
+            {
+                if (finalAction != null)
+                    finalAction();
+            }
+        }
 
-		private IEnumerator MoveSphereInside(Action initialAction, Action finalAction)
+        private IEnumerator MoveSphereInside(Action initialAction, Action finalAction)
 		{
 			if (movingSphere)
 				yield break;
 
 			movingSphere = true;
 
-			var notInZeroSphereControllers =
-				sphereControllers.Where(
-					sphereController =>
-						sphereController.notInZero
-					).ToList();
+                var notInZeroSphereControllers =
+                sphereControllers.Where(
+                    sphereController =>
+                        sphereController.notInZero
+                    ).ToList();
+            
+
 
 			if (notInZeroSphereControllers.Count == 1)
 			{
@@ -439,7 +574,7 @@ namespace Memoria
 			}
 
 			var actualRadiusFactor = radiusFactor * -1;
-			csvCreator.AddLines("Changing Sphere", (actualSphere + 2).ToString());
+			csvCreator.AddLines("Changing Sphere", (actualVisualization + 2).ToString());
 
 			if (initialAction != null)
 				initialAction();
@@ -453,7 +588,7 @@ namespace Memoria
 					var alphaTargerReached = false;
 
 					//Radius
-					var targetRadius = radiusAlphaSphereList[i].First;
+					var targetRadius = radiusAlphaVisualizationList[i].First;
 					sphereController.sphereRadius += actualRadiusFactor * radiusSpeed;
 
 					if (TargetReached(actualRadiusFactor, sphereController.sphereRadius, targetRadius))
@@ -464,17 +599,17 @@ namespace Memoria
 
 					//Alpha
 					var actualAlphaFactor = i == 0 ? alphaFactor * -1 : alphaFactor;
-					var targetAlpha = radiusAlphaSphereList[i].Second;
-					sphereController.sphereAlpha += actualAlphaFactor * alphaSpeed;
+					var targetAlpha = radiusAlphaVisualizationList[i].Second;
+					sphereController.alpha += actualAlphaFactor * alphaSpeed;
 
-					if (TargetReached(actualAlphaFactor, sphereController.sphereAlpha, targetAlpha))
+					if (TargetReached(actualAlphaFactor, sphereController.alpha, targetAlpha))
 					{
 						alphaTargerReached = true;
-						sphereController.sphereAlpha = targetAlpha;
+						sphereController.alpha = targetAlpha;
 					}
 
 					sphereController.ChangeVisualizationConfiguration(transform.position, sphereController.sphereRadius,
-						sphereController.sphereAlpha);
+						sphereController.alpha);
 					radiusAlphaTargetReached[i] = Tuple.New(radiusTargetReached, alphaTargerReached);
 				}
 
@@ -484,17 +619,97 @@ namespace Memoria
 				yield return new WaitForFixedUpdate();
 			}
 
-			sphereControllers[actualSphere].notInZero = false;
-			sphereControllers[actualSphere].gameObject.SetActive(false);
-			actualSphere++;
+			sphereControllers[actualVisualization].notInZero = false;
+			sphereControllers[actualVisualization].gameObject.SetActive(false);
+			actualVisualization++;
 
 			if (finalAction != null)
 				finalAction();
 
 			movingSphere = false;
 		}
+        private IEnumerator MovePlaneInside(Action initialAction, Action finalAction)
+        {
+            if (movingPlane)
+                yield break;
 
-		private IEnumerator MoveSphereOutside(Action initialAction, Action finalAction)
+            movingPlane = true;
+
+            var notInZeroPlaneControllers =
+            planeControllers.Where(
+                planeController =>
+                    planeController.notInZero
+                ).ToList();
+
+            if (notInZeroPlaneControllers.Count == 1)
+            {
+                movingPlane = false;
+
+                yield break;
+            }
+
+            var radiusAlphaTargetReached = new List<Tuple<bool, bool>>();
+            for (int i = 0; i < notInZeroPlaneControllers.Count; i++)
+            {
+                radiusAlphaTargetReached.Add(Tuple.New(false, false));
+            }
+
+            var actualRadiusFactor = radiusFactor * -1;
+            csvCreator.AddLines("Changing Plane", (actualVisualization + 2).ToString());
+
+            if (initialAction != null)
+                initialAction();
+
+            while (true)
+            {
+                for (int i = 0; i < notInZeroPlaneControllers.Count; i++)
+                {
+                    var planeController = notInZeroPlaneControllers[i];
+                    var radiusTargetReached = false;
+                    var alphaTargerReached = false;
+
+                    //Radius
+                    var targetRadius = radiusAlphaVisualizationList[i].First;
+                    planeController.distance += actualRadiusFactor * radiusSpeed;
+
+                    if (TargetReached(actualRadiusFactor, planeController.distance, targetRadius))
+                    {
+                        radiusTargetReached = true;
+                        planeController.distance = targetRadius;
+                    }
+
+                    //Alpha
+                    var actualAlphaFactor = i == 0 ? alphaFactor * -1 : alphaFactor;
+                    var targetAlpha = radiusAlphaVisualizationList[i].Second;
+                    planeController.alpha += actualAlphaFactor * alphaSpeed;
+
+                    if (TargetReached(actualAlphaFactor, planeController.alpha, targetAlpha))
+                    {
+                        alphaTargerReached = true;
+                        planeController.alpha = targetAlpha;
+                    }
+
+                    planeController.ChangeVisualizationConfiguration(transform.position, planeController.distance,
+                        planeController.alpha);
+                    radiusAlphaTargetReached[i] = Tuple.New(radiusTargetReached, alphaTargerReached);
+                }
+
+                if (radiusAlphaTargetReached.All(t => t.First && t.Second))
+                    break;
+
+                yield return new WaitForFixedUpdate();
+            }
+
+            planeControllers[actualVisualization].notInZero = false;
+            planeControllers[actualVisualization].gameObject.SetActive(false);
+            actualVisualization++;
+
+            if (finalAction != null)
+                finalAction();
+
+            movingPlane = false;
+        }
+        private IEnumerator MoveSphereOutside(Action initialAction, Action finalAction)
 		{
 			if (movingSphere)
 				yield break;
@@ -529,8 +744,8 @@ namespace Memoria
 				radiusAlphaTargetReached.Add(Tuple.New(false, false));
 			}
 
-			sphereControllers[actualSphere - 1].gameObject.SetActive(true);
-			csvCreator.AddLines("Changing Sphere", actualSphere.ToString());
+			sphereControllers[actualVisualization - 1].gameObject.SetActive(true);
+			csvCreator.AddLines("Changing Sphere", actualVisualization.ToString());
 
 			if (initialAction != null)
 				initialAction();
@@ -545,7 +760,7 @@ namespace Memoria
 					var alphaTargerReached = false;
 
 					//Radius
-					var targetRadius = radiusAlphaSphereList[i + 1].First;
+					var targetRadius = radiusAlphaVisualizationList[i + 1].First;
 					sphereController.sphereRadius += radiusFactor * radiusSpeed;
 
 					if (TargetReached(radiusFactor, sphereController.sphereRadius, targetRadius))
@@ -560,18 +775,18 @@ namespace Memoria
 						var actualAlphaFactor = i == 0
 							? alphaFactor
 							: alphaFactor * -1;
-						var targetAlpha = radiusAlphaSphereList[i + 1].Second;
-						sphereController.sphereAlpha += actualAlphaFactor * alphaSpeed;
+						var targetAlpha = radiusAlphaVisualizationList[i + 1].Second;
+						sphereController.alpha += actualAlphaFactor * alphaSpeed;
 
-						if (TargetReached(actualAlphaFactor, sphereController.sphereAlpha, targetAlpha))
+						if (TargetReached(actualAlphaFactor, sphereController.alpha, targetAlpha))
 						{
 							alphaTargerReached = true;
-							sphereController.sphereAlpha = targetAlpha;
+							sphereController.alpha = targetAlpha;
 						}
 					}
 					alphaWaitTimeCounter += Time.fixedDeltaTime;
 
-					sphereController.ChangeVisualizationConfiguration(transform.position, sphereController.sphereRadius, sphereController.sphereAlpha);
+					sphereController.ChangeVisualizationConfiguration(transform.position, sphereController.sphereRadius, sphereController.alpha);
 					radiusAlphaTargetReached[i] = Tuple.New(radiusTargetReached, alphaTargerReached);
 				}
 
@@ -581,8 +796,8 @@ namespace Memoria
 				yield return new WaitForFixedUpdate();
 			}
 
-			actualSphere--;
-			sphereControllers[actualSphere].notInZero = true;
+			actualVisualization--;
+			sphereControllers[actualVisualization].notInZero = true;
 
 			if (finalAction != null)
 				finalAction();
@@ -590,9 +805,105 @@ namespace Memoria
 			movingSphere = false;
 		}
 
-		private bool TargetReached(float factor, float value, float target)
+        private IEnumerator MovePlaneOutside(Action initialAction, Action finalAction)
+        {
+            if (movingPlane)
+                yield break;
+
+            movingPlane = true;
+
+            var notInZeroPlaneControllers =
+                planeControllers.Where(
+                    planeController =>
+                        planeController.notInZero
+                    ).ToList();
+
+            var inZeroPlaneControllers =
+                planeControllers.Where(
+                    planeController =>
+                        !planeController.notInZero
+                    ).ToList();
+
+            if (inZeroPlaneControllers.Count == 0)
+            {
+                movingPlane = false;
+
+                yield break;
+            }
+
+            var planeControllerList = new List<PlaneController> { inZeroPlaneControllers.Last() };
+            planeControllerList.AddRange(notInZeroPlaneControllers);
+
+            var radiusAlphaTargetReached = new List<Tuple<bool, bool>>();
+            for (int i = 0; i < planeControllerList.Count; i++)
+            {
+                radiusAlphaTargetReached.Add(Tuple.New(false, false));
+            }
+
+            planeControllers[actualVisualization - 1].gameObject.SetActive(true);
+            csvCreator.AddLines("Changing Plane", actualVisualization.ToString());
+
+            if (initialAction != null)
+                initialAction();
+
+            var alphaWaitTimeCounter = 0.0f;
+            while (true)
+            {
+                for (int i = 0; i < planeControllerList.Count; i++)
+                {
+                    var planeController = planeControllerList[i];
+                    var radiusTargetReached = false;
+                    var alphaTargerReached = false;
+
+                    //Radius
+                    var targetRadius = radiusAlphaVisualizationList[i + 1].First;
+                    planeController.distance += radiusFactor * radiusSpeed;
+
+                    if (TargetReached(radiusFactor, planeController.distance, targetRadius))
+                    {
+                        radiusTargetReached = true;
+                        planeController.distance = targetRadius;
+                    }
+
+                    if (alphaWaitTimeCounter >= alphaWaitTime)
+                    {
+                        //Alpha
+                        var actualAlphaFactor = i == 0
+                            ? alphaFactor
+                            : alphaFactor * -1;
+                        var targetAlpha = radiusAlphaVisualizationList[i + 1].Second;
+                        planeController.alpha += actualAlphaFactor * alphaSpeed;
+
+                        if (TargetReached(actualAlphaFactor, planeController.alpha, targetAlpha))
+                        {
+                            alphaTargerReached = true;
+                            planeController.alpha = targetAlpha;
+                        }
+                    }
+                    alphaWaitTimeCounter += Time.fixedDeltaTime;
+
+                    planeController.ChangeVisualizationConfiguration(transform.position, planeController.distance, planeController.alpha);
+                    radiusAlphaTargetReached[i] = Tuple.New(radiusTargetReached, alphaTargerReached);
+                }
+
+                if (radiusAlphaTargetReached.All(t => t.First && t.Second))
+                    break;
+
+                yield return new WaitForFixedUpdate();
+            }
+
+            actualVisualization--;
+            planeControllers[actualVisualization].notInZero = true;
+
+            if (finalAction != null)
+                finalAction();
+
+            movingPlane = false;
+        }
+
+        private bool TargetReached(float factor, float value, float target)
 		{
-			if (factor >= 0)
+            if (factor >= 0)
 			{
 				if (value >= target)
 				{
@@ -612,19 +923,19 @@ namespace Memoria
 
 		public void AutoTuneSpheres()
 		{
-			int sphereToShow = loadImageController.images / 39; //cantidad de esferas  en SetVariables a images se le asigna el valor GLPlayerPrefs.GetString(Scope, "Images");
-            int extraImages = loadImageController.images % 39;
+			int sphereToShow = loadImageController.images / 39;
+			int extraImages = loadImageController.images % 39;
 
-			if (extraImages != 0) // si sobran imagenes que mostrar se agrega una esfera extra
+			if (extraImages != 0)
 				sphereToShow++;
 			else
 				extraImages = 39;
 
-			if (sphereControllers != null)          //List<SphereController> != null
+			if (sphereControllers != null)
 			{
 				foreach (var sphereController in sphereControllers)
 				{
-					DestroyImmediate(sphereController.gameObject);      //se destruyen las esferas
+					DestroyImmediate(sphereController.gameObject);
 				}
 			}
 
@@ -632,14 +943,14 @@ namespace Memoria
 
 			for (int i = 0; i < sphereToShow; i++)
 			{
-				var newAlpha = 0.7f - 0.3f * i;     //representa en canal del color en formato RGBA (Red, Green Blue, Alpha) el cuál determina la transparencia. En ese código se determina cuanto alpha es adecuado según lo lejos que estén del centro.
-                var newRadius = 0.45f + 0.15f * i;  //radio de la esfera
+				var newAlpha = 0.7f - 0.3f * i;
+				var newRadius = 0.45f + 0.15f * i;
 
 				if (newAlpha < 0.0f)
 					newAlpha = 0.0f;
 
 				var newSphere = IdealSphereConfiguration(
-					i == sphereToShow - 1 ? extraImages : 39,       //si corresponde a la ultima esfera se asigna el valor de extraImages, si no el valor 39
+					i == sphereToShow - 1 ? extraImages : 39,
 					newRadius,
 					newAlpha);
 
@@ -649,38 +960,97 @@ namespace Memoria
 
 		private SphereController IdealSphereConfiguration(int elements, float radius, float alpha)
 		{
-			var rows = elements / 13;           //filas es 39/13 = 3
+			var rows = elements / 13;
 
 			if (elements % 13 != 0)
 				rows++;
 
-            //SphereController spherePrefab -> objeto
-            //Vector.zero -> posición
-            //Quaternion.Identity corresponde a "no rotation" - el objeto está perfectamente alineado con el mundo o los ejes de los padres -> rotación
-            var sphereController = Instantiate(spherePrefab, Vector3.zero, Quaternion.identity);
-
-
-			sphereController.transform.parent = transform;      //hace que transform (DIOmanager) sea el padre de sphereController (esfera actual)
-
+			var sphereController = Instantiate(spherePrefab, Vector3.zero, Quaternion.identity);
+			sphereController.transform.parent = transform;
 			sphereController.transform.ResetLocal();
-            sphereController.elementsToDisplay = elements;
 
-			sphereController.sphereRows = rows;
-
-			sphereController.rowHightDistance = 0.2f;       //distancia que hay entre cada fila de la esfera
-
-            sphereController.rowRadiusDifference = 0.05f;   //diferencia de radio del centro, esta diferencia entre las filas le da la forma de esfera.
-            sphereController.scaleFactor = new Vector3(0.2f, 0.2f, 0.001f);     //multiplicador para cambiar el tamaño de cada elemento, asegurando que todos se ven iguales.
-            sphereController.sphereRadius = radius;
-			sphereController.sphereAlpha = alpha;
+			sphereController.elementsToDisplay = elements;
+			sphereController.visualizationRow = rows;
+			sphereController.rowHightDistance = 0.2f;
+			sphereController.rowRadiusDifference = 0.05f;
+			sphereController.scaleFactor = new Vector3(0.2f, 0.2f, 0.001f);
+			sphereController.sphereRadius = radius;
+			sphereController.alpha = alpha;
 			sphereController.autoAngleDistance = true;
-
-
-			sphereController.showDebugGizmo = false;
+			sphereController.debugGizmo = false;
 
 			return sphereController;
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Plane
+
+        private void AutoTunePlanes()
+        {
+            int planesToShow = loadImageController.images / 12;
+            int extraImages = loadImageController.images % 12;
+
+            if (extraImages != 0)
+                planesToShow++;
+            else
+                extraImages = 12;
+
+            if (planeControllers != null)
+            {
+                foreach (var planeController in planeControllers)
+                {
+                    DestroyImmediate(planeController.gameObject);
+                }
+            }
+
+            planeControllers = new List<PlaneController>();
+
+            for (int i = 0; i < planesToShow; i++)
+            {
+                var newAlpha = 0.7f - 0.3f * i;
+                var newRadius = 0.45f + 0.15f * i * 4;
+
+                if (newAlpha < 0.0f)
+                    newAlpha = 0.0f;
+
+                var newPlane = IdealPlaneConfiguration(
+                    i == planesToShow - 1 ? extraImages : 12,
+                    newRadius,
+                    newAlpha);
+
+                planeControllers.Add(newPlane);
+            }
+        }
+        private PlaneController IdealPlaneConfiguration(int elements, float distance, float alpha)
+        {
+
+            var rows = elements / 4;
+
+            if (elements % 4 != 0)
+                rows++;
+
+            var planeController = Instantiate(planePrefab, Vector3.zero, Quaternion.identity);
+            planeController.transform.parent = transform;      //hace que transform (DIOmanager) sea el padre de visualizationController (esfera actual)
+
+            planeController.transform.ResetLocal();
+            planeController.elementsToDisplay = elements;
+
+            planeController.visualizationRow = rows;
+
+            planeController.rowHightDistance = 0.4f;
+            planeController.rowDistanceDifference = 0f;
+
+            planeController.scaleFactor = new Vector3(0.35f, 0.3f, 0.001f);     //multiplicador para cambiar el tamaño de cada elemento, asegurando que todos se ven iguales.
+            planeController.distance = distance;
+            planeController.alpha = alpha;
+            planeController.autoAngleDistance = true;
+
+
+            planeController.debugGizmo = false;
+
+            return planeController;
+        }
+        #endregion
+    }
 }

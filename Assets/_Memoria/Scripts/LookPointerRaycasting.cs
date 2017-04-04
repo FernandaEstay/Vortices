@@ -26,19 +26,26 @@ namespace Memoria
 			maxDistance = Mathf.Max(0.0f, maxDistance);
 		}
 
-		public void Update()
-		{
-			_forwardVector = transform.TransformDirection(Vector3.forward);
-			_ray = new Ray(transform.position, _forwardVector);
+        public void Update()
+        {
+            if (!_dioManager.mouseInput)
+            { 
+                _forwardVector = transform.TransformDirection(Vector3.forward);
+                _ray = new Ray(transform.position, _forwardVector);
+            }
+            else
+            {
+                _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            }
 
-			if (Physics.Raycast(_ray, out _raycastHit, maxDistance, ignoredLayerMask))
+            if (Physics.Raycast(_ray, out _raycastHit, maxDistance, ignoredLayerMask))
 			{
 				var posiblePitcheGrabObject = _raycastHit.transform.gameObject.GetComponent<PitchGrabObject>();
 
 				if (posiblePitcheGrabObject == null)
 					return;
 
-				if (posiblePitcheGrabObject.dioController.sphereController.sphereId != _dioManager.actualSphere)
+				if (posiblePitcheGrabObject.dioController.visualizationController.id != _dioManager.actualVisualization)
 				{
                     if (_actualPitchGrabObject != null)
                         _actualPitchGrabObject.OnUnDetect();
@@ -81,8 +88,8 @@ namespace Memoria
 				return;
 
 			print("Tag: " + _raycastHit.collider.tag);
-			print(string.Format("ID Name: {0}, Sphere ID: {1}",posiblePitcheGrabObject.idName, posiblePitcheGrabObject.dioController.sphereController.sphereId));
-			print("Actual Sphere: " + posiblePitcheGrabObject.dioController.DioManager.actualSphere);
+			print(string.Format("ID Name: {0}, Sphere ID: {1}",posiblePitcheGrabObject.idName, posiblePitcheGrabObject.dioController.visualizationController.id));
+			print("Actual Sphere: " + posiblePitcheGrabObject.dioController.DioManager.actualVisualization);
 		}
 	}
 }

@@ -71,7 +71,7 @@ namespace Memoria
 
 		public void LookPointerEnter(PitchGrabObject pitchGrabObject)
 		{
-			_initialAlpha = pitchGrabObject.dioController.sphereController.sphereAlpha;
+			_initialAlpha = pitchGrabObject.dioController.visualizationController.alpha;
 			var objectColor = pitchGrabObject.objectMeshRender.material.color;
 			objectColor.a = 1.0f;
 			pitchGrabObject.objectMeshRender.material.color = objectColor;

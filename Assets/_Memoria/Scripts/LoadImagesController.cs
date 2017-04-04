@@ -36,9 +36,8 @@ namespace Memoria
 
 		public IEnumerator LoadFolderImages()
 		{
-			var listOfDio = _dioManager.sphereControllers           //sphereController es un List<SphereController>
-				.SelectMany(sc => sc.dioControllerList).ToList();   //obtiene una lista de las esferas
-			var tuple = _loadImageBehaviour.TextureFormatGetter(); //tuple < "jpg o Png", "TextureFormat.DXT1">
+            var listOfDio = _dioManager.sphereControllers.Count > _dioManager.planeControllers.Count ? _dioManager.sphereControllers.SelectMany(sc => sc.dioControllerList).ToList() : _dioManager.planeControllers.SelectMany(sc => sc.dioControllerList).ToList();
+            var tuple = _loadImageBehaviour.TextureFormatGetter(); //tuple < "jpg o Png", "TextureFormat.DXT1">
 
             string fileSuffix = tuple.First;
 			TextureFormat textureFormat = tuple.Second;

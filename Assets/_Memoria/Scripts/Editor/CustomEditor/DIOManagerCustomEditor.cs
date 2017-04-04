@@ -7,288 +7,320 @@ using UnityEngine;
 
 namespace Memoria.Editor
 {
-	[CustomEditor(typeof(DIOManager), true), CanEditMultipleObjects]
-	public class DIOManagerCustomEditor : GLEditor<DIOManager>
-	{
-		private GLSerializedProperty _loadingScene;
-		private GLSerializedProperty _buttonPanel;
-		private GLSerializedProperty _useLeapMotion;
-		private GLSerializedProperty _usePitchGrab;
-		private GLSerializedProperty _useHapticGlove;
-		private GLSerializedProperty _useKeyboard;
-		private GLSerializedProperty _useMouse;
-		private GLSerializedProperty _useJoystick;
+    [CustomEditor(typeof(DIOManager), true), CanEditMultipleObjects]
+    public class DIOManagerCustomEditor : GLEditor<DIOManager>
+    {
+        private GLSerializedProperty _loadingScene;
+        private GLSerializedProperty _buttonPanel;
+        private GLSerializedProperty _panelMouse;
+        private GLSerializedProperty _useLeapMotion;
+        private GLSerializedProperty _usePitchGrab;
+        private GLSerializedProperty _useHapticGlove;
+        private GLSerializedProperty _useKeyboard;
+        private GLSerializedProperty _useMouse;
+        private GLSerializedProperty _useJoystick;
+        private GLSerializedProperty _visualizationPlane;
 
-		private GLSerializedProperty _csvCreatorPath;
+        private GLSerializedProperty _mouseInput;
+        private GLSerializedProperty _kinectInput;
 
-		private GLSerializedProperty _rayCastingDetector;
-		private GLSerializedProperty _lookPointerPrefab;
-		private GLSerializedProperty _lookPointerScale;
-		private GLSerializedProperty _closeRange;
+        private GLSerializedProperty _csvCreatorPath;
 
-		private GLSerializedProperty _leapMotionRig;
-		private GLSerializedProperty _pinchDetectorLeft;
-		private GLSerializedProperty _pinchDetectorRight;
+        private GLSerializedProperty _rayCastingDetector;
+        private GLSerializedProperty _lookPointerPrefab;
+        private GLSerializedProperty _lookPointerScale;
+        private GLSerializedProperty _closeRange;
 
-		private GLSerializedProperty _unityOpenGlove;
+        private GLSerializedProperty _leapMotionRig;
+        private GLSerializedProperty _pinchDetectorLeft;
+        private GLSerializedProperty _pinchDetectorRight;
 
-		private GLSerializedProperty _horizontalSpeed;
-		private GLSerializedProperty _verticalSpeed;
-		private GLSerializedProperty _radiusFactor;
-		private GLSerializedProperty _radiusSpeed;
-		private GLSerializedProperty _alphaFactor;
-		private GLSerializedProperty _alphaSpeed;
-		private GLSerializedProperty _alphaWaitTime;
-		private GLSerializedProperty _action1Key;
-		private GLSerializedProperty _action2Key;
-		private GLSerializedProperty _action3Key;
-		private GLSerializedProperty _action4Key;
-		private GLSerializedProperty _action5Key;
+        private GLSerializedProperty _unityOpenGlove;
 
-		private GLSerializedProperty _autoTuneSpheresOnPlay;
-		private GLSerializedProperty _informationPrefab;
-		private GLSerializedProperty _sphereCounter;
-		private GLSerializedProperty _spherePrefab;
-		private GLSerializedProperty _sphereControllers;
-		private GLSerializedProperty _loadImageController;
+        private GLSerializedProperty _horizontalSpeed;
+        private GLSerializedProperty _verticalSpeed;
+        private GLSerializedProperty _radiusFactor;
+        private GLSerializedProperty _radiusSpeed;
+        private GLSerializedProperty _alphaFactor;
+        private GLSerializedProperty _alphaSpeed;
+        private GLSerializedProperty _alphaWaitTime;
+        private GLSerializedProperty _action1Key;
+        private GLSerializedProperty _action2Key;
+        private GLSerializedProperty _action3Key;
+        private GLSerializedProperty _action4Key;
+        private GLSerializedProperty _action5Key;
 
-		public void OnEnable()
-		{
-			_loadingScene = FindProperty("loadingScene");
-			_buttonPanel = FindProperty("buttonPanel");
-			_useLeapMotion = FindProperty("useLeapMotion");
-			_usePitchGrab = FindProperty("usePitchGrab");
-			_useHapticGlove = FindProperty("useHapticGlove");
-			_useKeyboard = FindProperty("useKeyboard");
-			_useMouse = FindProperty("useMouse");
-			_useJoystick = FindProperty("useJoystick");
+        private GLSerializedProperty _autoTuneVisualizationOnPlay;
+        private GLSerializedProperty _visualizationCounter;
+        private GLSerializedProperty _loadImageController;
 
-			_csvCreatorPath = FindProperty("csvCreatorPath");
+        private GLSerializedProperty _informationPrefab;
+        private GLSerializedProperty _spherePrefab;
+        private GLSerializedProperty _sphereControllers;
 
-			_rayCastingDetector = FindProperty("rayCastingDetector");
-			_lookPointerPrefab = FindProperty("lookPointerPrefab");
-			_lookPointerScale = FindProperty("lookPointerScale");
-			_closeRange = FindProperty("closeRange");
+        private GLSerializedProperty _planePrefab;
+        private GLSerializedProperty _informationPlanePrefab;
+        private GLSerializedProperty _planeControllers;
 
-			_leapMotionRig = FindProperty("leapMotionRig");
-			_pinchDetectorLeft = FindProperty("pinchDetectorLeft");
-			_pinchDetectorRight = FindProperty("pinchDetectorRight");
+        public void OnEnable()
+        {
+            _loadingScene = FindProperty("loadingScene");
+            _buttonPanel = FindProperty("buttonPanel");
+            _panelMouse = FindProperty("panelMouse");
+            _useLeapMotion = FindProperty("useLeapMotion");
+            _usePitchGrab = FindProperty("usePitchGrab");
+            _useHapticGlove = FindProperty("useHapticGlove");
+            _useKeyboard = FindProperty("useKeyboard");
+            _useMouse = FindProperty("useMouse");
+            _useJoystick = FindProperty("useJoystick");
+            _visualizationPlane = FindProperty("visualizationPlane");
+            _mouseInput = FindProperty("mouseInput");
+            _kinectInput = FindProperty("kinectInput");
 
-			_unityOpenGlove = FindProperty("unityOpenGlove");
+            _csvCreatorPath = FindProperty("csvCreatorPath");
 
-			_horizontalSpeed = FindProperty("horizontalSpeed");
-			_verticalSpeed = FindProperty("verticalSpeed");
-			_radiusFactor = FindProperty("radiusFactor");
-			_radiusSpeed = FindProperty("radiusSpeed");
-			_alphaFactor = FindProperty("alphaFactor");
-			_alphaSpeed = FindProperty("alphaSpeed");
-			_alphaWaitTime = FindProperty("alphaWaitTime");
-			_action1Key = FindProperty("action1Key");
-			_action2Key = FindProperty("action2Key");
-			_action3Key = FindProperty("action3Key");
-			_action4Key = FindProperty("action4Key");
-			_action5Key = FindProperty("action5Key");
+            _rayCastingDetector = FindProperty("rayCastingDetector");
+            _lookPointerPrefab = FindProperty("lookPointerPrefab");
+            _lookPointerScale = FindProperty("lookPointerScale");
+            _closeRange = FindProperty("closeRange");
 
-			_autoTuneSpheresOnPlay = FindProperty("autoTuneSpheresOnPlay");
-			_informationPrefab = FindProperty("informationPrefab");
-			_sphereCounter = FindProperty("sphereCounter");
-			_spherePrefab = FindProperty("spherePrefab");
-			_loadImageController = FindProperty("loadImageController");
-			_sphereControllers = FindProperty("sphereControllers");
-		}
+            _leapMotionRig = FindProperty("leapMotionRig");
+            _pinchDetectorLeft = FindProperty("pinchDetectorLeft");
+            _pinchDetectorRight = FindProperty("pinchDetectorRight");
 
-		public override void OnInspectorGUI()
-		{
-			serializedObject.Update();
+            _unityOpenGlove = FindProperty("unityOpenGlove");
 
-			EditorHelper.ShowScriptField(serializedObject);
+            _horizontalSpeed = FindProperty("horizontalSpeed");
+            _verticalSpeed = FindProperty("verticalSpeed");
+            _radiusFactor = FindProperty("radiusFactor");
+            _radiusSpeed = FindProperty("radiusSpeed");
+            _alphaFactor = FindProperty("alphaFactor");
+            _alphaSpeed = FindProperty("alphaSpeed");
+            _alphaWaitTime = FindProperty("alphaWaitTime");
+            _action1Key = FindProperty("action1Key");
+            _action2Key = FindProperty("action2Key");
+            _action3Key = FindProperty("action3Key");
+            _action4Key = FindProperty("action4Key");
+            _action5Key = FindProperty("action5Key");
 
-			Splitter();
+            _autoTuneVisualizationOnPlay = FindProperty("autoTuneVisualizationOnPlay");
+            _informationPrefab = FindProperty("informationPrefab");
+            _visualizationCounter = FindProperty("visualizationCounter");
+            _spherePrefab = FindProperty("spherePrefab");
+            _planePrefab = FindProperty("planePrefab");
+            _informationPlanePrefab = FindProperty("informationPlanePrefab");
+            _loadImageController = FindProperty("loadImageController");
+            _sphereControllers = FindProperty("sphereControllers");
+            _planeControllers = FindProperty("planeControllers");
+        }
 
-			EditorHelper.AddLabel("General Configuration", true);
-			AddField(_loadingScene);
-			AddField(_buttonPanel);
-			AddField(_useLeapMotion);
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
 
-			if (_useLeapMotion.boolValue)
-			{
-				EditorGUI.indentLevel += 1;
-				AddField(_usePitchGrab);
-				AddField(_useHapticGlove);
-				EditorGUI.indentLevel -= 1;
-			}
+            EditorHelper.ShowScriptField(serializedObject);
 
-			AddField(_useKeyboard);
+            Splitter();
 
-			if (_useKeyboard.boolValue)
-			{
-				EditorGUI.indentLevel += 1;
-				AddField(_useMouse);
-				EditorGUI.indentLevel -= 1;
-			}
+            EditorHelper.AddLabel("General Configuration", true);
+            AddField(_loadingScene);
+            AddField(_buttonPanel);
+            AddField(_panelMouse);
+            AddField(_useLeapMotion);
 
-			AddField(_useJoystick);
+            if (_useLeapMotion.boolValue)
+            {
+                EditorGUI.indentLevel += 1;
+                AddField(_usePitchGrab);
+                AddField(_useHapticGlove);
+                EditorGUI.indentLevel -= 1;
+            }
 
-			Splitter();
+            AddField(_useKeyboard);
 
-			EditorHelper.AddLabel("DataOutput Configuration", true);
-			_csvCreatorPath.Label = "Path";
-			AddField(_csvCreatorPath);
+            /*
+            if (_useKeyboard.boolValue)
+            {
+                EditorGUI.indentLevel += 1;
+                AddField(_useMouse);
+                EditorGUI.indentLevel -= 1;
+            }
+            */
 
-			Splitter();
+            AddField(_useJoystick);
+            AddField(_mouseInput);
+            AddField(_kinectInput);
 
-			EditorHelper.AddLabel("Oculus Rift Configuration", true);
-			AddField(_rayCastingDetector);
-			AddField(_lookPointerPrefab);
-			AddField(_lookPointerScale);
-			AddField(_closeRange);
+            Splitter();
 
-			Splitter();
+            EditorHelper.AddLabel("Visualization Configuration", true);
+            AddField(_visualizationPlane);
+            AddField(_autoTuneVisualizationOnPlay);
+            AddField(_visualizationCounter);
+            AddField(_loadImageController);
 
-			EditorHelper.AddLabel("Leap Motion Configuration", true);
-			AddField(_leapMotionRig);
-			AddField(_pinchDetectorLeft);
-			AddField(_pinchDetectorRight);
+            Splitter();
 
-			Splitter();
+            EditorHelper.AddLabel("DataOutput Configuration", true);
+            _csvCreatorPath.Label = "Path";
+            AddField(_csvCreatorPath);
 
-			EditorHelper.AddLabel("OpenGlove Haptic Configuration", true);
-			AddField(_unityOpenGlove);
+            Splitter();
 
-			Splitter();
+            EditorHelper.AddLabel("Oculus Rift Configuration", true);
+            AddField(_rayCastingDetector);
+            AddField(_lookPointerPrefab);
+            AddField(_lookPointerScale);
+            AddField(_closeRange);
 
-			EditorHelper.AddLabel("Input Configuration", true);
-			AddField(_horizontalSpeed);
-			AddField(_verticalSpeed);
-			AddField(_radiusFactor);
-			AddField(_radiusSpeed);
-			AddField(_alphaFactor);
-			AddField(_alphaSpeed);
-			AddField(_alphaWaitTime);
-			if (_useKeyboard.boolValue)
-			{
-				EditorHelper.AddLabel("> Keyboard", true);
-				AddField(_action1Key);
-				AddField(_action2Key);
-				AddField(_action3Key);
-				AddField(_action4Key);
-				AddField(_action5Key);
-			}
+            Splitter();
 
-			Splitter();
+            EditorHelper.AddLabel("Leap Motion Configuration", true);
+            AddField(_leapMotionRig);
+            AddField(_pinchDetectorLeft);
+            AddField(_pinchDetectorRight);
 
-			EditorHelper.AddLabel("Sphere Configuration", true);
-			AddField(_autoTuneSpheresOnPlay);
-			AddField(_informationPrefab);
-			AddField(_sphereCounter);
-			
-			Target.spherePrefab = EditorGUILayout.ObjectField(new GUIContent("SphereController Prefab"), _spherePrefab.SerializedProperty.objectReferenceValue, typeof (SphereController), false) as SphereController;			
+            Splitter();
 
-			AddField(_loadImageController);
-			RemoveAndAddSphereButtons();
-			AutoTuneSphereButtons();
+            EditorHelper.AddLabel("OpenGlove Haptic Configuration", true);
+            AddField(_unityOpenGlove);
 
-			for (int i = 0; i < _sphereControllers.SerializedProperty.arraySize; i++)
-			{
-				EditorGUILayout.BeginVertical("Box");
-				EditorHelper.AddLabel("Sphere " + (i + 1), true);
-				AddSphereControllerField(_sphereControllers.SerializedProperty.GetArrayElementAtIndex(i));
-				EditorGUILayout.EndHorizontal();
-			}
+            Splitter();
 
-			Splitter();
+            EditorHelper.AddLabel("Input Configuration", true);
+            AddField(_horizontalSpeed);
+            AddField(_verticalSpeed);
+            AddField(_radiusFactor);
+            AddField(_radiusSpeed);
+            AddField(_alphaFactor);
+            AddField(_alphaSpeed);
+            AddField(_alphaWaitTime);
+            if (_useKeyboard.boolValue)
+            {
+                EditorHelper.AddLabel("> Keyboard", true);
+                AddField(_action1Key);
+                AddField(_action2Key);
+                AddField(_action3Key);
+                AddField(_action4Key);
+                AddField(_action5Key);
+            }
 
-			serializedObject.ApplyModifiedProperties();
-		}
+            Splitter();
+            EditorHelper.AddLabel("Plane Configuration", true);
+            AddField(_informationPlanePrefab);
+            Target.planePrefab = EditorGUILayout.ObjectField(new GUIContent("PlaneController Prefab"), _planePrefab.SerializedProperty.objectReferenceValue, typeof(PlaneController), false) as PlaneController;
 
-		private void AddSphereControllerField(SerializedProperty sphereControllerSerializedProperty)
-		{
-			if (sphereControllerSerializedProperty.objectReferenceValue == null)
-				return;
+            Splitter();
 
-			var sphereControllerProperty = new SerializedObject(sphereControllerSerializedProperty.objectReferenceValue);
+            EditorHelper.AddLabel("Sphere Configuration", true);
+            AddField(_informationPrefab);
 
-			sphereControllerProperty.Update();
+            Target.spherePrefab = EditorGUILayout.ObjectField(new GUIContent("SphereController Prefab"), _spherePrefab.SerializedProperty.objectReferenceValue, typeof(SphereController), false) as SphereController;
 
-			var elementsToDisplay = sphereControllerProperty.FindProperty("elementsToDisplay");
-			var sphereRows = sphereControllerProperty.FindProperty("sphereRows");
-			var rowHightDistance = sphereControllerProperty.FindProperty("rowHightDistance");
-			var rowRadiusDifference = sphereControllerProperty.FindProperty("rowRadiusDifference");
-			var scaleFactor = sphereControllerProperty.FindProperty("scaleFactor");
-			var sphereRadius = sphereControllerProperty.FindProperty("sphereRadius");
-			var sphereAlpha = sphereControllerProperty.FindProperty("sphereAlpha");
-			var autoAngleDistance = sphereControllerProperty.FindProperty("autoAngleDistance");
-			var angleDistance = sphereControllerProperty.FindProperty("angleDistance");
-			var showDebugGizmo = sphereControllerProperty.FindProperty("showDebugGizmo");
-			var sphereDebugColor = sphereControllerProperty.FindProperty("sphereDebugColor");
-			
-			EditorGUILayout.PropertyField(elementsToDisplay);
-			EditorGUILayout.PropertyField(sphereRows);
+            RemoveAndAddSphereButtons();
+            AutoTuneSphereButtons();
 
-			if (sphereRows.intValue != 1)
-			{
-				EditorGUILayout.PropertyField(rowHightDistance);
-				EditorGUILayout.PropertyField(rowRadiusDifference);
-			}
-			EditorGUILayout.PropertyField(scaleFactor);
-			EditorGUILayout.PropertyField(sphereRadius);
-			EditorGUILayout.PropertyField(sphereAlpha);
-			EditorGUILayout.PropertyField(autoAngleDistance);
+            for (int i = 0; i < _sphereControllers.SerializedProperty.arraySize; i++)
+            {
+                EditorGUILayout.BeginVertical("Box");
+                EditorHelper.AddLabel("Sphere " + (i + 1), true);
+                AddSphereControllerField(_sphereControllers.SerializedProperty.GetArrayElementAtIndex(i));
+                EditorGUILayout.EndHorizontal();
+            }
 
-			if(!autoAngleDistance.boolValue)
-				EditorGUILayout.PropertyField(angleDistance);
+            Splitter();
 
-			EditorGUILayout.PropertyField(showDebugGizmo);
+            serializedObject.ApplyModifiedProperties();
+        }
 
-			if(showDebugGizmo.boolValue)
-				EditorGUILayout.PropertyField(sphereDebugColor);
+        private void AddSphereControllerField(SerializedProperty sphereControllerSerializedProperty)
+        {
+            if (sphereControllerSerializedProperty.objectReferenceValue == null)
+                return;
 
-			sphereControllerProperty.ApplyModifiedProperties();
-		}
+            var sphereControllerProperty = new SerializedObject(sphereControllerSerializedProperty.objectReferenceValue);
 
-		private void RemoveAndAddSphereButtons()
-		{
-			EditorGUILayout.BeginHorizontal();
+            sphereControllerProperty.Update();
 
-			if (GUILayout.Button("-"))
-			{
-				if (Target.sphereControllers.Count > 0)
-				{
-					var lastIndex = Target.sphereControllers.Count - 1;
-					var sphereController = Target.sphereControllers[lastIndex];
-					DestroyImmediate(sphereController.gameObject);
-					Target.sphereControllers.RemoveAt(lastIndex);
-				}
-			}
+            var elementsToDisplay = sphereControllerProperty.FindProperty("elementsToDisplay");
+            var sphereRows = sphereControllerProperty.FindProperty("visualizationRow");
+            var rowHightDistance = sphereControllerProperty.FindProperty("rowHightDistance");
+            var rowRadiusDifference = sphereControllerProperty.FindProperty("rowRadiusDifference");
+            var scaleFactor = sphereControllerProperty.FindProperty("scaleFactor");
+            var sphereRadius = sphereControllerProperty.FindProperty("sphereRadius");
+            var sphereAlpha = sphereControllerProperty.FindProperty("alpha");
+            var autoAngleDistance = sphereControllerProperty.FindProperty("autoAngleDistance");
+            var angleDistance = sphereControllerProperty.FindProperty("angleDistance");
+            var showDebugGizmo = sphereControllerProperty.FindProperty("debugGizmo");
+            var sphereDebugColor = sphereControllerProperty.FindProperty("debugColor");
 
-			if (GUILayout.Button("+"))
-			{
-				if (Target.sphereControllers == null)
-					Target.sphereControllers = new List<SphereController>();
+            EditorGUILayout.PropertyField(elementsToDisplay);
+            EditorGUILayout.PropertyField(sphereRows);
 
-				var sphereController = Instantiate(_spherePrefab.objectReferenceValue, Vector3.zero, Quaternion.identity) as SphereController;
-				sphereController.transform.parent = Target.transform;
-				sphereController.transform.ResetLocal();
+            if (sphereRows.intValue != 1)
+            {
+                EditorGUILayout.PropertyField(rowHightDistance);
+                EditorGUILayout.PropertyField(rowRadiusDifference);
+            }
+            EditorGUILayout.PropertyField(scaleFactor);
+            EditorGUILayout.PropertyField(sphereRadius);
+            EditorGUILayout.PropertyField(sphereAlpha);
+            EditorGUILayout.PropertyField(autoAngleDistance);
 
-				Target.sphereControllers.Add(sphereController);
-			}
+            if (!autoAngleDistance.boolValue)
+                EditorGUILayout.PropertyField(angleDistance);
 
-			EditorGUILayout.EndHorizontal();
-		}
+            EditorGUILayout.PropertyField(showDebugGizmo);
 
-		private void AutoTuneSphereButtons()
-		{
-			if (Target.sphereControllers.Count > 0)
-			{
-				EditorGUILayout.BeginHorizontal();
+            if (showDebugGizmo.boolValue)
+                EditorGUILayout.PropertyField(sphereDebugColor);
 
-				if (GUILayout.Button("Auto-Tune Spheres"))
-				{
-					Target.AutoTuneSpheres();
-				}
+            sphereControllerProperty.ApplyModifiedProperties();
+        }
 
-				EditorGUILayout.EndHorizontal();
-			}
-		}
-	}
+        private void RemoveAndAddSphereButtons()
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("-"))
+            {
+                if (Target.sphereControllers.Count > 0)
+                {
+                    var lastIndex = Target.sphereControllers.Count - 1;
+                    var sphereController = Target.sphereControllers[lastIndex];
+                    DestroyImmediate(sphereController.gameObject);
+                    Target.sphereControllers.RemoveAt(lastIndex);
+                }
+            }
+
+            if (GUILayout.Button("+"))
+            {
+                if (Target.sphereControllers == null)
+                    Target.sphereControllers = new List<SphereController>();
+
+                var sphereController = Instantiate(_spherePrefab.objectReferenceValue, Vector3.zero, Quaternion.identity) as SphereController;
+                sphereController.transform.parent = Target.transform;
+                sphereController.transform.ResetLocal();
+
+                Target.sphereControllers.Add(sphereController);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void AutoTuneSphereButtons()
+        {
+            if (Target.sphereControllers.Count > 0)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                if (GUILayout.Button("Auto-Tune Spheres"))
+                {
+                    Target.AutoTuneSpheres();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+    }
 }

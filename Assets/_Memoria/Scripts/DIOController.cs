@@ -17,16 +17,16 @@ namespace Memoria
 		[HideInInspector]
 		public bool inSpherePosition;
 		[HideInInspector]
-		public SphereController sphereController;
+		public VisualizationController visualizationController;
 
 		public DIOManager DioManager
 		{
-			get { return sphereController.dioManager; }
+			get { return visualizationController.dioManager; }
 		}
 
-		public void Initialize(SphereController assignedSphereController, int id)
+		public void Initialize(VisualizationController assignedVisualizationController, int id)
 		{
-			sphereController = assignedSphereController;
+			visualizationController = assignedVisualizationController;
 
 			pitchGrabObject.Initialize(this, id);
 

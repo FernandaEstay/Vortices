@@ -78,8 +78,8 @@ namespace Memoria
 			{
 				_isLookPointerOn = true;
 				DioManager.lookPointerInstance.LookPointerEnter(this);
-
-				DioManager.buttonPanel.EnableAccept();
+                if(!DioManager.mouseInput)
+				    DioManager.buttonPanel.EnableAccept();
 
 				if (DioManager.lookPointerInstance.actualPitchGrabObject == null)
 					DioManager.buttonPanel.EnableZoomIn();
@@ -235,8 +235,11 @@ namespace Memoria
 			if (dioController.inSpherePosition)
 			{
 				dioController.inSpherePosition = false;
-				DioManager.buttonPanel.EnableZoomOut();
-				DioManager.buttonPanel.EnableAccept();
+                if (!DioManager.mouseInput)
+                {
+                    DioManager.buttonPanel.EnableZoomOut();
+                    DioManager.buttonPanel.EnableAccept();
+                }
 				DioManager.buttonPanel.DisableMoveCameraInside();
 				DioManager.buttonPanel.DisableMoveCameraOutside();
 
