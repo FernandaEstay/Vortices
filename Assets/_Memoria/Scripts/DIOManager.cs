@@ -24,6 +24,7 @@ namespace Memoria
 		//General Configuration
 		public LoadingScene loadingScene;
 		public ButtonPanel buttonPanel;
+        public PanelMouse panelMouse;
 		public bool useLeapMotion = true;
 		public bool usePitchGrab = true;
 		public bool useHapticGlove;
@@ -31,6 +32,8 @@ namespace Memoria
 		public bool useMouse;
         public bool visualizationPlane = true;
 		public bool useJoystick;
+        public bool mouseInput;
+        public bool kinectInput;
 
 		//DataOutput Configuration
 		[HideInInspector]
@@ -148,8 +151,10 @@ namespace Memoria
 			var visualizationIndex = 0;
 			actualVisualization = 0;
 			radiusAlphaVisualizationList = new List<Tuple<float, float>> { Tuple.New(0.0f, 0.0f) };
+
 			movingSphere = false;
             movingPlane = false;
+
 			csvCreator = new CsvCreator(csvCreatorPath);
 
 			var leapSpaceChildrens = leapMotionRig.leapSpace.transform.GetChildren();
@@ -201,7 +206,16 @@ namespace Memoria
 
 			rayCastingDetector.Initialize(this);
 
-			buttonPanel.Initialize(this);
+            if (mouseInput && !useKeyboard && !useJoystick)
+            {
+                panelMouse.Initialize(this);
+                buttonPanel.gameObject.SetActive(false);
+            }
+            else
+            {
+                buttonPanel.Initialize(this);
+                panelMouse.gameObject.SetActive(false);
+            }
 
 			//loadImageController.Initialize(this);
 			loadingScene.Initialize(this);
@@ -221,8 +235,8 @@ namespace Memoria
 					buttonPanel.zoomOut3DButton.gameObject.SetActive(false);
 				}
 			}
-
-			buttonPanel.zoomIn3DButton.gameObject.SetActive(false);
+            if(!mouseInput)
+			    buttonPanel.zoomIn3DButton.gameObject.SetActive(false);
 
 			StartCoroutine(loadImageController.LoadFolderImages());
 
@@ -240,7 +254,39 @@ namespace Memoria
 				buttonPanel.EnableMoveCameraInside();
 				buttonPanel.EnableMoveCameraOutside();
 			};
-		}
+
+            if (mouseInput && !useKeyboard && !useJoystick)
+            {
+                initialPlaneAction = () =>
+                {
+                    panelMouse.DisableMoveCameraInside();
+                    panelMouse.DisableMoveCameraOutside();
+                };
+
+                finalPlaneAction = () =>
+                {
+                    panelMouse.EnableMoveCameraInside();
+                    panelMouse.EnableMoveCameraOutside();
+                };
+            }
+            else
+            {
+                initialPlaneAction = () =>
+                {
+                    buttonPanel.DisableZoomIn();
+                    buttonPanel.DisableZoomOut();
+                    buttonPanel.DisableAccept();
+                    buttonPanel.DisableMoveCameraInside();
+                    buttonPanel.DisableMoveCameraOutside();
+                };
+
+                finalPlaneAction = () =>
+                {
+                    buttonPanel.EnableMoveCameraInside();
+                    buttonPanel.EnableMoveCameraOutside();
+                };
+            }
+        }
 
 		private void SetVariables()
 		{

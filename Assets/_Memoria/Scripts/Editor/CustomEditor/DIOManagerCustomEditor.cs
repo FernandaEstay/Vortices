@@ -12,6 +12,7 @@ namespace Memoria.Editor
     {
         private GLSerializedProperty _loadingScene;
         private GLSerializedProperty _buttonPanel;
+        private GLSerializedProperty _panelMouse;
         private GLSerializedProperty _useLeapMotion;
         private GLSerializedProperty _usePitchGrab;
         private GLSerializedProperty _useHapticGlove;
@@ -19,6 +20,9 @@ namespace Memoria.Editor
         private GLSerializedProperty _useMouse;
         private GLSerializedProperty _useJoystick;
         private GLSerializedProperty _visualizationPlane;
+
+        private GLSerializedProperty _mouseInput;
+        private GLSerializedProperty _kinectInput;
 
         private GLSerializedProperty _csvCreatorPath;
 
@@ -62,6 +66,7 @@ namespace Memoria.Editor
         {
             _loadingScene = FindProperty("loadingScene");
             _buttonPanel = FindProperty("buttonPanel");
+            _panelMouse = FindProperty("panelMouse");
             _useLeapMotion = FindProperty("useLeapMotion");
             _usePitchGrab = FindProperty("usePitchGrab");
             _useHapticGlove = FindProperty("useHapticGlove");
@@ -69,6 +74,8 @@ namespace Memoria.Editor
             _useMouse = FindProperty("useMouse");
             _useJoystick = FindProperty("useJoystick");
             _visualizationPlane = FindProperty("visualizationPlane");
+            _mouseInput = FindProperty("mouseInput");
+            _kinectInput = FindProperty("kinectInput");
 
             _csvCreatorPath = FindProperty("csvCreatorPath");
 
@@ -118,6 +125,7 @@ namespace Memoria.Editor
             EditorHelper.AddLabel("General Configuration", true);
             AddField(_loadingScene);
             AddField(_buttonPanel);
+            AddField(_panelMouse);
             AddField(_useLeapMotion);
 
             if (_useLeapMotion.boolValue)
@@ -140,6 +148,8 @@ namespace Memoria.Editor
             */
 
             AddField(_useJoystick);
+            AddField(_mouseInput);
+            AddField(_kinectInput);
 
             Splitter();
 

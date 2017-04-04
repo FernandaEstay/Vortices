@@ -29,7 +29,6 @@ namespace Memoria
 
         public virtual void InitializeDioControllers(DIOManager fatherDioManager, int Id, Vector3 center, int textureIndex, bool createNewObjects = false)
         {
-            Debug.Log("llega a create initialize");
             dioManager = fatherDioManager;
             id = Id;
             notInZero = true;
@@ -49,7 +48,6 @@ namespace Memoria
                 if (i == 1)
                     elementsPerRow[i] += extraItems;
             }
-            Debug.Log("antes de createVisualization ");
             CreateVisualization(createNewObjects, center);
         }
 
